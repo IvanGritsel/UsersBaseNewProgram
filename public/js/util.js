@@ -93,11 +93,6 @@ function deleteSelected() {
 }
 
 function showWarningMessage(message) {
-    // let x = document.getElementById('input_warning');
-    // x.innerHTML = message;
-    // if (x.style.display === 'none') {
-    //     x.style.display = 'block';
-    // }
     let warning = $('#input_warning');
     warning.html(message);
     if (!warning.is(':visible')) {
