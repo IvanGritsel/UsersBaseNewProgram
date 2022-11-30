@@ -34,16 +34,15 @@ class ApiUserController implements Controller
     }
 
     /**
-     * @param string $email
-     *
+     * @param int $id
      * @return string
      *
-     * @RequestMapping(path="/api/users/email/{email}", method="GET")
-     * @PathVariable(variableName="email")
+     * @RequestMapping(path="/api/users/id/{id}", method="GET")
+     * @PathVariable(variableName="id")
      */
-    public function userByEmail(string $email): string
+    public function userByEmail(int $id): string
     {
-        return json_encode($this->userRepository->findById($email));
+        return json_encode($this->userRepository->findById($id));
     }
 
     /**
@@ -73,31 +72,29 @@ class ApiUserController implements Controller
     }
 
     /**
-     * @param string $email
-     *
-     * @return void
-     *
-     * @RequestMapping(path="/api/users/delete/{email}", method="DELETE")
-     * @PathVariable(variableName="email")
-     */
-    public function deleteUser(string $email): void
-    {
-        $this->userRepository->deleteUser($email);
-    }
-
-    /**
-     * @param string $emailArray
-     *
+     * @param string $idArray
      * @return void
      *
      * @RequestMapping(path="/api/users/delete/selected", method="DELETE")
-     * @RequestBodyVariable(variableName="emailArray")
+     * @RequestBodyVariable(variableName="idArray")
      */
-    public function deleteMultiple(string $emailArray): void
+    public function deleteMultiple(string $idArray): void
     {
-        $emails = json_decode($emailArray);
-        foreach ($emails as $email) {
-            $this->userRepository->deleteUser($email);
+        $ids = json_decode($idArray);
+        foreach ($ids as $id) {
+            $this->userRepository->deleteUser($id);
         }
+    }
+
+    /**
+     * @param int $id
+     * @return void
+     *
+     * @RequestMapping(path="/api/users/delete/one/{id}", method="DELETE")
+     * @PathVariable(variableName="id")
+     */
+    public function deleteUser(int $id): void
+    {
+        $this->userRepository->deleteUser($id);
     }
 }

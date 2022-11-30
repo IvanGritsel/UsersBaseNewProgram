@@ -1,0 +1,515 @@
+openapi: 3.0.3
+info:
+  title: Users Base API
+  version: 0.1.0
+  description: |-
+        API to add, update, delete and get users.
+        [Source](https://github.com/IvanGritsel/UsersBaseRest)
+  contact:
+    email: ivan.gritsel@gmail.com
+tags:
+  - name: api/users
+    description: Users operations endpoints returning plain http response
+  - name: users
+    description: User operations endpoints returning rendered pages
+  - name: gorest/users
+    description: Users operations endpoints re-sending requests to gorest api
+paths:
+  /api/users/all/{page}:
+    get:
+      tags:
+        - api/users
+      summary: Get all users
+      description: Get all users on page (10 users per page)
+      operationId: apiGetAll
+      parameters:
+        - name: page
+          in: path
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /api/users/id/{id}:
+    get:
+      tags:
+        - api/users
+      summary: Get user by id
+      description: Get user by id
+      operationId: apiGetOne
+      parameters:
+        - name: id
+          in: path
+          description: Id of user to return
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+  /api/users/new:
+    post:
+      tags:
+        - api/users
+      summary: Add new user
+      description: Add new user
+      operationId: apiAdd
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /api/users/update:
+    put:
+      tags:
+        - api/users
+      summary: Update user
+      description: Update user
+      operationId: apiUpdate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /api/users/delete/one/{id}:
+    delete:
+      tags:
+        - api/users
+      summary: Delete user
+      description: Delete user
+      operationId: apiDelete
+      parameters:
+        - name: id
+          in: path
+          description: Id of user to be deleted
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '204':
+          description: successful operation
+  /api/users/delete/selected:
+    delete:
+      tags:
+        - api/users
+      summary: Delete multiple users
+      description: Delete multiple users
+      operationId: apiDeleteMultiple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+                format: int32
+              example:
+                - 1
+                - 2
+                - 3
+      responses:
+        '204':
+          description: successful operation
+  /users/all/{page}:
+    get:
+      tags:
+        - users
+      summary: Get all users
+      description: Get all users on page (10 users per page)
+      operationId: getAll
+      parameters:
+        - name: page
+          in: path
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: successful operation
+          content: 
+            text/html:
+              schema:
+                type: string
+                example: |-
+                    <head>
+                      <title>Users</title>
+                    </head>
+                    <body>
+                      Html page here
+                    </body>
+  /users/id/{id}:
+    get:
+      tags:
+        - users
+      summary: Get user by id
+      description: Get user by id
+      operationId: getOne
+      parameters:
+        - name: id
+          in: path
+          description: Id of user to return
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: successful operation
+          content: 
+            text/html:
+              schema:
+                type: string
+                example: |-
+                  <head>
+                    <title>Users</title>
+                  </head>
+                  <body>
+                    Html page here
+                  </body>
+  /users/new:
+    post:
+      tags:
+        - users
+      summary: Add new user
+      description: Add new user
+      operationId: add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+                example: |-
+                  <head>
+                    <title>Users</title>
+                  </head>
+                  <body>
+                    Html page here
+                  </body>
+  /users/update:
+    put:
+      tags:
+        - users
+      summary: Update user
+      description: Update user
+      operationId: update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+                example: |-
+                  <head>
+                    <title>Users</title>
+                  </head>
+                  <body>
+                    Html page here
+                  </body>
+  /users/delete/one/{id}:
+    delete:
+      tags:
+        - users
+      summary: Delete user
+      description: Delete user
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          description: Id of user to be deleted
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '204':
+          description: successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+                example: |-
+                  <head>
+                    <title>Users</title>
+                  </head>
+                  <body>
+                    Html page here
+                  </body>
+  /users/delete/selected:
+    delete:
+      tags:
+        - users
+      summary: Delete multiple users
+      description: Delete multiple users
+      operationId: deleteMultiple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+                format: int32
+              example:
+                - 1
+                - 2
+                - 3
+      responses:
+        '204':
+          description: successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+                example: |-
+                  <head>
+                    <title>Users</title>
+                  </head>
+                  <body>
+                    Html page here
+                  </body>
+  /gorest/users/all/{page}:
+    get:
+      tags:
+        - gorest/users
+      summary: Get all users
+      description: Get all users on page (10 users per page)
+      operationId: gorestGetAll
+      parameters:
+        - name: page
+          in: path
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: successful operation
+          content: 
+            text/html:
+              schema:
+                type: string
+                example: |-
+                    <head>
+                      <title>Users</title>
+                    </head>
+                    <body>
+                      Html page here
+                    </body>
+  /gorest/users/id/{id}:
+    get:
+      tags:
+        - gorest/users
+      summary: Get user by id
+      description: Get user by id
+      operationId: gorestGetOne
+      parameters:
+        - name: id
+          in: path
+          description: Id of user to return
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: successful operation
+          content: 
+            text/html:
+              schema:
+                type: string
+                example: |-
+                  <head>
+                    <title>Users</title>
+                  </head>
+                  <body>
+                    Html page here
+                  </body>
+  /gorest/users/new:
+    post:
+      tags:
+        - gorest/users
+      summary: Add new user
+      description: Add new user
+      operationId: gorestAdd
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+                example: |-
+                  <head>
+                    <title>Users</title>
+                  </head>
+                  <body>
+                    Html page here
+                  </body>
+  /gorest/users/update:
+    put:
+      tags:
+        - gorest/users
+      summary: Update user
+      description: Update user
+      operationId: gorestUpdate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+                example: |-
+                  <head>
+                    <title>Users</title>
+                  </head>
+                  <body>
+                    Html page here
+                  </body>
+  /gorest/users/delete/one/{id}:
+    delete:
+      tags:
+        - gorest/users
+      summary: Delete user
+      description: Delete user
+      operationId: gorestDelete
+      parameters:
+        - name: id
+          in: path
+          description: Id of user to be deleted
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '204':
+          description: successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+                example: |-
+                  <head>
+                    <title>Users</title>
+                  </head>
+                  <body>
+                    Html page here
+                  </body>
+  /gorest/users/delete/selected:
+    delete:
+      tags:
+        - gorest/users
+      summary: Delete multiple users
+      description: Delete multiple users
+      operationId: gorestDeleteMultiple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+                format: int32
+              example:
+                - 1
+                - 2
+                - 3
+      responses:
+        '204':
+          description: successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+                example: |-
+                  <head>
+                    <title>Users</title>
+                  </head>
+                  <body>
+                    Html page here
+                  </body>
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        email: 
+          type: string
+          example: john@email.com
+        name:
+          type: string
+          example: John Doe
+        gender:
+          type: integer
+          format: int32
+          example: 1
+        status:
+          type: integer
+          format: int32
+          example: 1
+      xml:
+        name: user
+  requestBodies:
+    User:
+      description: User object to be added/edited
+      content: 
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
