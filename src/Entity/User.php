@@ -8,10 +8,38 @@ use JsonSerializable;
 
 class User implements JsonSerializable
 {
+    private int $id;
     private string $email;
     private string $name;
     private Gender $gender;
     private Status $status;
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'email' => $this->getEmail(),
+            'name' => $this->getName(),
+            'gender' => $this->getGender()->name,
+            'status' => $this->getStatus()->name,
+        ];
+    }
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
 
     /**
      * @return string
@@ -75,15 +103,5 @@ class User implements JsonSerializable
     public function setStatus(Status $status): void
     {
         $this->status = $status;
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'email' => $this->getEmail(),
-            'name' => $this->getName(),
-            'gender' => $this->getGender()->name,
-            'status' => $this->getStatus()->name,
-        ];
     }
 }

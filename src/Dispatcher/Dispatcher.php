@@ -24,48 +24,26 @@ class Dispatcher
     public function __construct()
     {
         $this->logger = Logger::getInstance();
-        $filesInFolder = scandir(ROOT_DIR . 'Controller');
+        $filesInFolder = scandir(__DIR__ . '/../Controller/');
         foreach ($filesInFolder as $fileName) {
-            if (preg_match("/^[A-Z][a-z]+Controller\.php$/", $fileName)) {
+            if (preg_match("/^([A-Z][a-z]+)+Controller\.php$/", $fileName)) {
                 include ROOT_DIR . 'Controller\\' . $fileName;
                 $fileName = preg_replace("/\.php/", '', $fileName);
                 $fileName = "App\\Controller\\$fileName";
                 $this->controllers[] = new $fileName();
             }
         }
-        $this->logger->log(LogLevel::INFO, "Initialized Dispatcher, found " . sizeof($this->controllers) . ' controller(s)');
+        $this->logger->log(LogLevel::INFO, 'Initialized Dispatcher, found ' . sizeof($this->controllers) . ' controller(s)');
         $this->annotationReader = new AnnotationReader();
     }
 
-    public function dispatchRequest()
-    {
-    }
-
-    public function dispatchApiRequest(string $request): string
+    public function dispatchRequestNoHttp(string $request): string
     {
         $requestData = $this->parseHttpRequest($request);
-        $this->logger->log(LogLevel::INFO, "Dispatching request to " . $requestData['path']);
+        $this->logger->log(LogLevel::INFO, 'Dispatching ' . $requestData['method'] . ' request to ' . $requestData['path']);
 
         try {
-            $controller = $this->getRequestController($requestData['path']);
-            if (!$controller) {
-                $this->logger->log(LogLevel::ERROR, 'No controller for request ' . $requestData['path'] . ' found');
-
-                return $this->buildErrorResponse(
-                    new Exception('This route does not exist', 404)
-                );
-            }
-            $method = $this->getRequestMethod($controller, $requestData['method'], $requestData['path']);
-            if (!$method) {
-                $this->logger->log(LogLevel::ERROR, 'No method for request ' . $requestData['path'] . ' found');
-
-                return $this->buildErrorResponse(
-                    new Exception('This route does not exist', 404)
-                );
-            }
-            $argument = $this->getArgument($controller, $method, $requestData);
-
-            return $this->buildHttpResponse($this->callControllerMethod($controller, $method, $argument));
+            return $this->doDispatch($requestData);
         } catch (Exception $e) {
             return $this->buildErrorResponse($e);
         }
@@ -101,17 +79,41 @@ class Dispatcher
         return $result;
     }
 
+    private function doDispatch(array $requestData): string
+    {
+        $controller = $this->getRequestController($requestData['path']);
+        if (!$controller) {
+            $this->logger->log(LogLevel::ERROR, 'No controller for request ' . $requestData['path'] . ' found');
+
+            return $this->buildErrorResponse(
+                new Exception('This route does not exist', 404)
+            );
+        }
+        $method = $this->getRequestMethod($controller, $requestData['method'], $requestData['path']);
+        if (!$method) {
+            $this->logger->log(LogLevel::ERROR, 'No method for request ' . $requestData['path'] . ' found');
+
+            return $this->buildErrorResponse(
+                new Exception('This route does not exist', 404)
+            );
+        }
+        $argument = $this->getArgument($controller, $method, $requestData);
+
+        return $this->callControllerMethod($controller, $method, $argument);
+    }
+
     /**
      * @throws ReflectionException
      */
     private function getRequestController(string $request): Controller|bool
     {
-        $relevantRequestPart = preg_split('/\//', $request)[1];
+        $requestNoSlashes = preg_replace('/\//', '', $request);
         foreach ($this->controllers as $controller) {
             $refClass = new ReflectionClass($controller::class);
             $classMapping = $this->annotationReader
-                ->getClassAnnotation($refClass, ControllerMapping::class);
-            if ($classMapping->classMapping === ('/' . $relevantRequestPart)) {
+                ->getClassAnnotation($refClass, ControllerMapping::class)->classMapping;
+            $classMappingNoSlashes = preg_replace('/\//', '', $classMapping);
+            if (str_contains($requestNoSlashes, $classMappingNoSlashes)) {
                 return $controller;
             }
         }
@@ -170,7 +172,7 @@ class Dispatcher
         }
     }
 
-    private function getPathVariableValue(string $requestPath, string $methodPath, string $variableName): string
+    private function getPathVariableValue(string $requestPath, string $methodPath, string $variableName): string|null
     {
         $requestPathChunked = preg_split('/\//', $requestPath);
         $methodPathChunked = preg_split('/\//', $methodPath);
@@ -179,7 +181,7 @@ class Dispatcher
         return $requestPathChunked[$variableIndex];
     }
 
-    private function getArgument(Controller $controller, string $method, array $parsedRequest): string
+    private function getArgument(Controller $controller, string $method, array $parsedRequest): mixed
     {
         $class = $controller::class;
         $refMethod = new ReflectionMethod("$class::$method");
@@ -196,17 +198,6 @@ class Dispatcher
         } else {
             return '';
         }
-    }
-
-    private function buildHttpResponse(string $responseBody = ''): string
-    {
-        return 'HTTP/1.1 ' . ($responseBody !== '' ? 200 : 204) . "\r\n" .
-            'Date: ' . date('D, d M Y H:i:s e') . "\r\n" .
-            ($responseBody === '' ? '' : ('Content-Length: ' . strlen($responseBody) . "\r\n")) .
-            ($responseBody === '' ? '' : ("Content-Type: application/json\r\n")) .
-            "Access-Control-Allow-Origin: *\r\n" .
-            "Connection: Closed\r\n" .
-            ($responseBody === '' ? '' : ("\r\n$responseBody"));
     }
 
     private function callControllerMethod(Controller $controller, string $method, string $argument): string
@@ -230,5 +221,28 @@ class Dispatcher
                 return '';
             }
         }
+    }
+
+    public function dispatchRequest(string $request): string
+    {
+        $requestData = $this->parseHttpRequest($request);
+        $this->logger->log(LogLevel::INFO, 'Dispatching request to ' . $requestData['path']);
+
+        try {
+            return $this->buildHttpResponse($this->doDispatch($requestData));
+        } catch (Exception $e) {
+            return $this->buildErrorResponse($e);
+        }
+    }
+
+    private function buildHttpResponse(string $responseBody = ''): string
+    {
+        return 'HTTP/1.1 ' . ($responseBody !== '' ? 200 : 204) . "\r\n" .
+            'Date: ' . date('D, d M Y H:i:s e') . "\r\n" .
+            ($responseBody === '' ? '' : ('Content-Length: ' . strlen($responseBody) . "\r\n")) .
+            ($responseBody === '' ? '' : ("Content-Type: application/json\r\n")) .
+            "Access-Control-Allow-Origin: *\r\n" .
+            "Connection: Closed\r\n" .
+            ($responseBody === '' ? '' : ("\r\n$responseBody"));
     }
 }

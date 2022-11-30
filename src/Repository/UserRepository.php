@@ -10,11 +10,11 @@ use PDO;
 
 class UserRepository
 {
-    private string $SQL_SELECT_ALL = 'SELECT * FROM user';
-    private string $SQL_SELECT_BY_EMAIL = 'SELECT * FROM user WHERE email = :email';
-    private string $SQL_INSERT = 'INSERT INTO user (email, name, gender, status) VALUE (:email, :name, :gender, :status)';
-    private string $SQL_UPDATE = 'UPDATE user SET name = :name, gender = :gender, status = :status WHERE email = :email';
-    private string $SQL_DELETE = 'DELETE FROM user WHERE email = :email';
+    private string $SQL_SELECT_ALL = 'SELECT * FROM users ORDER BY `id` DESC LIMIT :page,10';
+    private string $SQL_SELECT_BY_EMAIL = 'SELECT * FROM users WHERE id = :id';
+    private string $SQL_INSERT = 'INSERT INTO users (email, name, gender_id, status_id) VALUE (:email, :name, :gender, :status)';
+    private string $SQL_UPDATE = 'UPDATE users SET email = :email, name = :name, gender_id = :gender, status_id = :status WHERE id = :id';
+    private string $SQL_DELETE = 'DELETE FROM users WHERE id = :id';
 
     private ConnectionFactory $connectionFactory;
 
@@ -23,17 +23,21 @@ class UserRepository
         $this->connectionFactory = ConnectionFactory::getInstance();
     }
 
-    public function findAll(): array
+    public function findAll(int $page): array
     {
         try {
             $connection = $this->connectionFactory->getConnection();
             $stmt = $connection->prepare($this->SQL_SELECT_ALL);
+            $page = $page * 10 - 10;
+
+            $stmt->bindParam(':page', $page, PDO::PARAM_INT);
 
             $stmt->execute();
             $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            $dbRaw = $stmt->fetchAll();
 
             $result = [];
-            foreach ($stmt->fetchAll() as $item) {
+            foreach ($dbRaw as $item) {
                 $result[] = UserMapper::toEntity($item);
             }
             $connection = null;
@@ -44,13 +48,13 @@ class UserRepository
         }
     }
 
-    public function findByEmail(string $email): User
+    public function findById(int $id): User
     {
         try {
             $connection = $this->connectionFactory->getConnection();
             $stmt = $connection->prepare($this->SQL_SELECT_BY_EMAIL);
 
-            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
             $stmt->execute();
 
@@ -96,6 +100,7 @@ class UserRepository
             $connection = $this->connectionFactory->getConnection();
             $stmt = $connection->prepare($this->SQL_UPDATE);
 
+            $id = $toUpdate->getId();
             $email = $toUpdate->getEmail();
             $name = $toUpdate->getName();
             $gender = $toUpdate->getGender()->value;
@@ -105,6 +110,7 @@ class UserRepository
             $stmt->bindParam(':name', $name);
             $stmt->bindParam(':gender', $gender);
             $stmt->bindParam(':status', $status);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
 
             $connection = null;
@@ -115,13 +121,13 @@ class UserRepository
         }
     }
 
-    public function deleteUser(string $email): void
+    public function deleteUser(int $id): void
     {
         try {
             $connection = $this->connectionFactory->getConnection();
             $stmt = $connection->prepare($this->SQL_DELETE);
 
-            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':id', $id);
             $stmt->execute();
 
             $connection = null;

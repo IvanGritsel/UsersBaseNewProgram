@@ -15,6 +15,7 @@
     "twig/twig": "*",
     "friendsofphp/php-cs-fixer": "*",
     "ext-sockets": "*",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "guzzlehttp/guzzle": "^7.0"
   }
 }

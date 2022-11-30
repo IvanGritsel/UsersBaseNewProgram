@@ -2,6 +2,8 @@
 
 namespace App\Logger;
 
+use Exception;
+
 class Logger
 {
     private static Logger $instance;
@@ -34,10 +36,13 @@ class Logger
         $currentDate = date('dmY');
         if (!file_exists(__DIR__ . '/../../log')) {
             @mkdir(__DIR__ . '/../../log');
-            $logMessage = "New log file created\r\n" . $logMessage;
+            $logMessage = "New log directory created\r\n" . $logMessage;
         }
 
-        $logfile = fopen(__DIR__ . "/../../log/$currentDate.log", 'a');
+        $logfile = fopen(__DIR__ . "/../../log/$currentDate.log", 'a+');
+        if (fread($logfile, 2) == '') {
+            $logMessage = "New log file created\r\n" . $logMessage;
+        }
         if ($logfile) {
             fwrite($logfile, $logMessage);
             fclose($logfile);
@@ -52,7 +57,11 @@ class Logger
     {
     }
 
-    private function __wakeup()
+    /**
+     * @throws Exception
+     */
+    public function __wakeup()
     {
+        throw new Exception('Calling this method is not allowed');
     }
 }

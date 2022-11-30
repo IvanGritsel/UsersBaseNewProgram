@@ -1,0 +1,185 @@
+<head>
+    <title>{% block title %}{{ pageTitle }}{% endblock %}</title>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+          integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://bootstrap5.ru/css/docs.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/js/util.js"></script>
+</head>
+<body style="background-color: #eee; display:flex; flex-direction: row;">
+<div style="width: 30%; height: 98%; margin: 5px" class="card rounded-5 text-black">
+    <form method="POST" action="{% if altDataSource == false %}/gorest{% endif %}/users/all/1"
+          style="margin: 10px">
+        <p>Data source</p>
+        <input type="hidden" id="alt_data_source" value="{{ altDataSource }}">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="alt_data_source_switch"
+                    {% if altDataSource == true %} checked {% endif %}>
+            <label class="form-check-label" for="alt_data_source_switch" id="db_option_label"
+                    {% if altDataSource == true %}
+                        style="color: dimgrey"
+                    {% else %}
+                        style="color: darkblue"
+                    {% endif %}
+            >Local DB </label>
+            <label class="form-check-label" for="alt_data_source_switch">/</label>
+            <label class="form-check-label" for="alt_data_source_switch" id="api_option_label"
+                    {% if altDataSource == flase %}
+                        style="color: dimgrey"
+                    {% else %}
+                        style="color: darkblue"
+                    {% endif %}
+            > REST API</label>
+        </div>
+        <button type="submit" id="change_source_button" style="margin: 10px; display: none"
+                class="btn btn-outline-info">
+            Change data source
+        </button>
+    </form>
+    <form id="form" method="POST" action="{% if altDataSource == true %}/gorest{% endif %}/users/new">
+        <input type="hidden" name="id" id="id"/>
+        <label for="email_field" style="margin-left: 5px; margin-top: 5px">Email</label>
+        <input type="email" id="email_field" name="email" style="margin: 5px; width: 95%"
+               placeholder="email@domain.com">
+
+        <label for="name_field" style="margin-left: 5px; margin-top: 5px">Your first and last name</label>
+        <input type="text" id="name_field" name="name" style="margin: 5px; width: 95%" placeholder="John Smith">
+
+        <input type="hidden" name="method" id="method" value="POST">
+
+        <div style="margin: 5px; width: 95%">
+            <label for="gender_field">Gender</label>
+            <select name="gender" id="gender_field" style="width: 100%; margin-top: 5px">
+                <option value="1">Male</option>
+                <option value="2">Female</option>
+            </select>
+        </div>
+
+        <div style="margin: 5px; width: 95%">
+            <label for="status_field">Status</label>
+            <select name="status" id="status_field" style="width: 100%; margin-top: 5px">
+                <option value="1">Active</option>
+                <option value="2">Inactive</option>
+            </select>
+        </div>
+
+        <p id="edit_warning" style="display: none">Now editing. Clear form to cancel editing</p>
+
+        <p id="input_warning" style="display: none; color: #4f1100"></p>
+
+        <div style="display: flex; flex-direction: row; margin-top: 20px; justify-content: center">
+            <button onclick="return checkInput()" type="submit" class="btn btn-outline-success"
+                    style="margin-right: 5px; width: 40%">Submit
+            </button>
+            <button onclick="resetForm()" type="reset" class="btn btn-outline-danger"
+                    style="margin-left: 5px; width: 40%">Clear form
+            </button>
+        </div>
+    </form>
+</div>
+<div style="width: 70%; height: 98%; margin: 5px" class="card rounded-5 text-black">
+    {% if users|length != 0 %}
+        <div style="display: flex; flex-direction: row; height: 10%">
+            <h3 style="margin: 5px">
+                Users on page {{ page }}
+            </h3>
+            <form method="POST"
+                  action="{% if altDataSource == true %}/gorest{% endif %}/users/delete/selected"
+                  style="margin: 5px; display: none" id="delete_selected_form">
+                <div id="ids_to_delete"></div>
+                <input type="hidden" name="method" value="DELETE">
+                <button type="submit" onclick="return deleteSelected()" class="btn btn-outline-danger">
+                    Delete selected
+                </button>
+            </form>
+        </div>
+
+        <div style="overflow-y: scroll">
+        <table style="margin: 10px; width: 98%" class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th scope="col">
+                        <input type="checkbox" id="check_uncheck" onchange="checkUncheck()"/>
+                </th>
+                <th scope="col">Email</th>
+                <th scope="col">Name</th>
+                <th scope="col">Gender</th>
+                <th scope="col">Status</th>
+                <th scope="col">Controls</th>
+            </tr>
+            </thead>
+            <tbody id="table_body">
+            {% for user in users %}
+                <tr id="{{ user.id }}">
+                    <td id="check"><input class="checkbox" type="checkbox" value="{{ user.id }}"></td>
+                    <td id="email">{{ user.email }}</td>
+                    <td id="name">{{ user.name }}</td>
+                    <td id="gender">{{ user.gender|capitalize }}</td>
+                    <td id="status">{{ user.status|capitalize }}</td>
+                    <td>
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <button type="button" style="margin: 5px" class="btn btn-outline-warning"
+                                        onclick="fillForEdit(this)" value="{{ user.id }}">Edit
+                                </button>
+                            </div>
+                            <form method="POST"
+                                  action="{% if altDataSource == true %}/gorest{% endif %}/users/delete/one/{{ user.id }}"
+                                  class="col-sm-4">
+                                <input type="hidden" name="method" value="DELETE">
+                                <button type="submit" style="margin: 5px" class="btn btn-outline-danger"
+                                        onclick="return confirm('This action can not be undone. Proceed?')">Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        <div>
+            <div class="form-group row d-flex justify-content-center" style="margin: 10px">
+                <form id="button_prev" method="POST" {% if page > 1 %}
+                    action="{% if altDataSource == true %}/gorest{% endif %}/users/all/{{ page - 1 }}"
+                {% endif %}
+                      class="col-sm-1">
+                    <button
+                            {% if page > 1 %}
+                                type="submit" class="btn btn-outline-info"
+                            {% else %}
+                                disabled class="btn btn-outline-dark"
+                            {% endif %}
+                    ><
+                    </button>
+                </form>
+                <h4 class="col-sm-1 d-flex justify-content-center">{{ page }}</h4>
+                <form id="button_next"
+                      method="POST" {% if users|length == 10 %}
+                    action="{% if altDataSource == true %}/gorest{% endif %}/users/all/{{ page + 1 }}" {% endif %}
+                      class="col-sm-1">
+                    <button
+                            {% if users|length == 10 %}
+                                type="submit" class="btn btn-outline-info"
+                            {% else %}
+                                disabled class="btn btn-outline-dark"
+                            {% endif %}
+                    >>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    {% else %}
+        <div>
+            <h3 style="margin: 20px">No users found</h3>
+        </div>
+    {% endif %}
+    {#    {{ dump() }} #}
+</div>
+
+<script type="text/javascript">
+
+</script>
+</body>

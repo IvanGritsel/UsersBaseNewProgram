@@ -41,7 +41,7 @@ class Listener
 
             $this->logger->log(LogLevel::INFO, "Received following:\r\n$input");
 
-            $response = $this->dispatcher->dispatchApiRequest($input);
+            $response = $this->dispatcher->dispatchRequest($input);
 
             $this->logger->log(LogLevel::INFO, "Sending back this:\r\n$response");
 

@@ -3,6 +3,7 @@
 namespace App\Connection;
 
 use App\Exception\ConnectionException;
+use Exception;
 use PDO;
 use PDOException;
 
@@ -58,7 +59,11 @@ class ConnectionFactory
     {
     }
 
-    private function __wakeup()
+    /**
+     * @throws Exception
+     */
+    public function __wakeup()
     {
+        throw new Exception('Calling this method is not allowed');
     }
 }
