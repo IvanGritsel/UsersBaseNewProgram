@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'jquery';
 
 $(document).ready(function () {
     $('.checkbox').on('change', function () {
@@ -10,7 +11,7 @@ $(document).ready(function () {
     });
 
     $('.edit-button').on('click', function(event) {
-        fillForEdit(event);
+        fillForEdit(event.target);
     });
 
     $('#alt_data_source_switch').on('click', function () {
@@ -55,17 +56,17 @@ function fillForEdit(editButton) {
     let row = document.getElementById(idToEdit).children;
     for (const cell of row) {
         if (cell.id === 'email') {
-            $('#email_field').val(cell.html());
+            $('#email_field').val(cell.innerHTML);
         } else if (cell.id === 'name') {
-            $('#name_field').val(cell.html());
+            $('#name_field').val(cell.innerHTML);
         } else if (cell.id === 'gender') {
-            if (cell.html() === 'Male') {
+            if (cell.innerHTML === 'Male') {
                 $('#gender_field').val(1);
             } else {
                 $('#gender_field').val(2);
             }
         } else if (cell.id === 'status') {
-            if (cell.html() === 'Active') {
+            if (cell.innerHTML === 'Active') {
                 $('#status_field').val(1);
             } else {
                 $('#status_field').val(2);
