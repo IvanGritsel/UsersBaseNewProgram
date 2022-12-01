@@ -1,0 +1,92 @@
+.body {
+    background-color: #eee;
+    display: flex;
+    flex-direction: row;
+}
+
+.form-panel {
+    width: 30%;
+    height: 98%;
+    margin: 5px;
+}
+
+.table-panel {
+    width: 70%;
+    height: 98%;
+    margin: 5px;
+}
+
+.default-margin {
+    margin: 10%;
+}
+
+.small-margin {
+    margin: 5%;
+}
+
+.big-margin {
+    margin: 20%;
+}
+
+.default-margin-hidden {
+    margin: 10%;
+    display: none;
+}
+
+.small-margin-hidden {
+    margin: 5%;
+    display: none;
+}
+
+.default-margin-abs {
+    margin: 10px;
+}
+
+.small-margin-abs {
+    margin: 5px;
+}
+
+.active-option {
+    color: darkblue;
+}
+
+.inactive-option {
+    color: dimgray;
+}
+
+.form-label-margin {
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.form-input-margin {
+    margin: 5px;
+    width: 95%;
+}
+
+.button-div {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.control-button {
+    margin-right: 5px;
+    width: 40%;
+}
+
+.table-header {
+    display: flex;
+    flex-direction: row;
+    height: 10%;
+}
+
+.scrollable {
+    overflow-y: auto;
+}
+
+.table-body-size {
+    margin: 10px;
+    width: 98%;
+}
