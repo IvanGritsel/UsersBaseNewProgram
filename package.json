@@ -1,0 +1,31 @@
+{
+  "name": "nativetasksnewprogram",
+  "version": "1.0.0",
+  "description": "Tasks 2.1 - 2.8",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IvanGritsel/UsersBaseNewProgram.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IvanGritsel/UsersBaseNewProgram/issues"
+  },
+  "homepage": "https://github.com/IvanGritsel/UsersBaseNewProgram#readme",
+  "devDependencies": {
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.0"
+  },
+  "dependencies": {
+    "bootstrap": "^5.2.3",
+    "css-loader": "^6.7.2",
+    "jquery": "^3.6.1",
+    "popper.js": "^1.16.1",
+    "style-loader": "^3.3.1"
+  }
+}

@@ -1,3 +1,5 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 $(document).ready(function () {
     $('.checkbox').on('change', function () {
         if ($('.checkbox:checked').length !== 0) {
@@ -5,6 +7,10 @@ $(document).ready(function () {
         } else {
             $('#delete_selected_form').hide();
         }
+    });
+
+    $('.edit-button').on('click', function(event) {
+        fillForEdit(event);
     });
 
     $('#alt_data_source_switch').on('click', function () {
@@ -22,6 +28,22 @@ $(document).ready(function () {
         dbLabel.css('color', apiLabel.css('color'));
         apiLabel.css('color', col);
     });
+
+    $('#check_uncheck').on('click', function () {
+        checkUncheck();
+    });
+
+    $('#reset_button').on('click', function() {
+        resetForm();
+    });
+
+    $('#submit').on('click', function() {
+        return checkInput();
+    });
+
+    $('#delete_selected').on('click', function () {
+        return deleteSelected();
+    })
 });
 
 function fillForEdit(editButton) {
@@ -33,17 +55,17 @@ function fillForEdit(editButton) {
     let row = document.getElementById(idToEdit).children;
     for (const cell of row) {
         if (cell.id === 'email') {
-            $('#email_field').val(cell.innerHTML);
+            $('#email_field').val(cell.html());
         } else if (cell.id === 'name') {
-            $('#name_field').val(cell.innerHTML);
+            $('#name_field').val(cell.html());
         } else if (cell.id === 'gender') {
-            if (cell.innerHTML === 'Male') {
+            if (cell.html() === 'Male') {
                 $('#gender_field').val(1);
             } else {
                 $('#gender_field').val(2);
             }
         } else if (cell.id === 'status') {
-            if (cell.innerHTML === 'Active') {
+            if (cell.html() === 'Active') {
                 $('#status_field').val(1);
             } else {
                 $('#status_field').val(2);

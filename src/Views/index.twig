@@ -1,14 +1,10 @@
 <head>
     <title>{% block title %}{{ pageTitle }}{% endblock %}</title>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
-          integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://bootstrap5.ru/css/docs.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="/js/util.js"></script>
+    <script src="/dist/main.js"></script>
 </head>
 <body style="background-color: #eee; display:flex; flex-direction: row;">
-<div style="width: 30%; height: 98%; margin: 5px" class="card rounded-5 text-black">
+<div style="width: 30%; height: 98%; margin: 5px" class="card rounded-4 text-black">
     <form method="POST" action="{% if altDataSource == false %}/gorest{% endif %}/users/all/1"
           style="margin: 10px">
         <p>Data source</p>
@@ -69,16 +65,16 @@
         <p id="input_warning" style="display: none; color: #4f1100"></p>
 
         <div style="display: flex; flex-direction: row; margin-top: 20px; justify-content: center">
-            <button onclick="return checkInput()" type="submit" class="btn btn-outline-success"
+            <button id="submit" type="submit" class="btn btn-outline-success"
                     style="margin-right: 5px; width: 40%">Submit
             </button>
-            <button onclick="resetForm()" type="reset" class="btn btn-outline-danger"
+            <button id="reset_button" type="reset" class="btn btn-outline-danger"
                     style="margin-left: 5px; width: 40%">Clear form
             </button>
         </div>
     </form>
 </div>
-<div style="width: 70%; height: 98%; margin: 5px" class="card rounded-5 text-black">
+<div style="width: 70%; height: 98%; margin: 5px" class="card rounded-4 text-black">
     {% if users|length != 0 %}
         <div style="display: flex; flex-direction: row; height: 10%">
             <h3 style="margin: 5px">
@@ -89,55 +85,55 @@
                   style="margin: 5px; display: none" id="delete_selected_form">
                 <div id="ids_to_delete"></div>
                 <input type="hidden" name="method" value="DELETE">
-                <button type="submit" onclick="return deleteSelected()" class="btn btn-outline-danger">
+                <button type="submit" id="delete_selected" class="btn btn-outline-danger">
                     Delete selected
                 </button>
             </form>
         </div>
 
-        <div style="overflow-y: scroll">
-        <table style="margin: 10px; width: 98%" class="table table-striped table-bordered">
-            <thead>
-            <tr>
-                <th scope="col">
-                        <input type="checkbox" id="check_uncheck" onchange="checkUncheck()"/>
-                </th>
-                <th scope="col">Email</th>
-                <th scope="col">Name</th>
-                <th scope="col">Gender</th>
-                <th scope="col">Status</th>
-                <th scope="col">Controls</th>
-            </tr>
-            </thead>
-            <tbody id="table_body">
-            {% for user in users %}
-                <tr id="{{ user.id }}">
-                    <td id="check"><input class="checkbox" type="checkbox" value="{{ user.id }}"></td>
-                    <td id="email">{{ user.email }}</td>
-                    <td id="name">{{ user.name }}</td>
-                    <td id="gender">{{ user.gender|capitalize }}</td>
-                    <td id="status">{{ user.status|capitalize }}</td>
-                    <td>
-                        <div class="form-group row">
-                            <div class="col-sm-4">
-                                <button type="button" style="margin: 5px" class="btn btn-outline-warning"
-                                        onclick="fillForEdit(this)" value="{{ user.id }}">Edit
-                                </button>
-                            </div>
-                            <form method="POST"
-                                  action="{% if altDataSource == true %}/gorest{% endif %}/users/delete/one/{{ user.id }}"
-                                  class="col-sm-4">
-                                <input type="hidden" name="method" value="DELETE">
-                                <button type="submit" style="margin: 5px" class="btn btn-outline-danger"
-                                        onclick="return confirm('This action can not be undone. Proceed?')">Delete
-                                </button>
-                            </form>
-                        </div>
-                    </td>
+        <div style="overflow-y: auto">
+            <table style="margin: 10px; width: 98%" class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col">
+                        <input type="checkbox" id="check_uncheck"/>
+                    </th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Controls</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody id="table_body">
+                {% for user in users %}
+                    <tr id="{{ user.id }}">
+                        <td id="check"><input class="checkbox" type="checkbox" value="{{ user.id }}"></td>
+                        <td id="email">{{ user.email }}</td>
+                        <td id="name">{{ user.name }}</td>
+                        <td id="gender">{{ user.gender|capitalize }}</td>
+                        <td id="status">{{ user.status|capitalize }}</td>
+                        <td>
+                            <div class="form-group row">
+                                <div class="col-sm-4">
+                                    <button type="button" style="margin: 5px"
+                                            class="btn btn-outline-warning edit-button" value="{{ user.id }}">Edit
+                                    </button>
+                                </div>
+                                <form method="POST"
+                                      action="{% if altDataSource == true %}/gorest{% endif %}/users/delete/one/{{ user.id }}"
+                                      class="col-sm-4">
+                                    <input type="hidden" name="method" value="DELETE">
+                                    <button type="submit" style="margin: 5px" class="btn btn-outline-danger"
+                                            onclick="return confirm('This action can not be undone. Proceed?')">Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
         <div>
             <div class="form-group row d-flex justify-content-center" style="margin: 10px">
