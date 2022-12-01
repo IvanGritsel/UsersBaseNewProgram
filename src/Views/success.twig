@@ -3,9 +3,9 @@
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
     <script src="/dist/main.js"></script>
 </head>
-<body style="background-color: #eee; display:flex; flex-direction: row;">
-<div style="margin: 10%; width: 60%" class="card rounded-3 text-black">
-    <h3 style="margin: 10px">
+<body class="body">
+<div class="card rounded-3 text-black big-margin">
+    <h3 class="default-margin-abs">
         {% if action == 'post' %}
             New record successfully created
         {% elseif action == 'update' %}
@@ -16,9 +16,9 @@
             How did you get here?
         {% endif %}
     </h3>
-    <form method="POST" action="/" style="margin: 5%">
+    <form method="POST" action="/" class="small-margin-abs">
         <input type="hidden" name="altDataSource" value="{% if altDataSource == true %}true{% else %}false{% endif %}"/>
-        <div style="margin: 10px">
+        <div class="default-margin-abs">
             <button type="submit" class="btn btn-outline-info">Back to main page</button>
         </div>
     </form>
