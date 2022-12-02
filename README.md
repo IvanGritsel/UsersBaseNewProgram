@@ -1,4 +1,4 @@
-Tasks 2.1 - 2.10
+Tasks 2.1 - 2.11
 
 Develop MVC application to work with user data. Requirements:
 
@@ -7,4 +7,5 @@ Develop MVC application to work with user data. Requirements:
  - Must be able to delete multiple users at once
  - Create openapi documentation
  - Use webpack for js
+ - Add PHPUnit tests
  - This list will be updated
