@@ -16,13 +16,19 @@ class ApiUserController implements Controller
 {
     private UserRepository $userRepository;
 
-    public function __construct()
+    /**
+     * Passing parameter to constructor is not recommended. This option was added primarily for testing purposes.
+     *
+     * @param UserRepository|null $userRepository
+     */
+    public function __construct(?UserRepository $userRepository = null)
     {
-        $this->userRepository = new UserRepository();
+        $this->userRepository = $userRepository ?? new UserRepository();
     }
 
     /**
      * @param int $page
+     *
      * @return string
      *
      * @RequestMapping(path="/api/users/all/{page}", method="GET")
@@ -35,6 +41,7 @@ class ApiUserController implements Controller
 
     /**
      * @param int $id
+     *
      * @return string
      *
      * @RequestMapping(path="/api/users/id/{id}", method="GET")
@@ -73,6 +80,7 @@ class ApiUserController implements Controller
 
     /**
      * @param string $idArray
+     *
      * @return void
      *
      * @RequestMapping(path="/api/users/delete/selected", method="DELETE")
@@ -88,6 +96,7 @@ class ApiUserController implements Controller
 
     /**
      * @param int $id
+     *
      * @return void
      *
      * @RequestMapping(path="/api/users/delete/one/{id}", method="DELETE")
