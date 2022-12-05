@@ -81,7 +81,7 @@
             </h3>
             <form method="POST"
                   action="{% if altDataSource == true %}/gorest{% endif %}/users/delete/selected"
-                  class="small-margin-hidden" id="delete_selected_form">
+                  class="small-margin-abs-hidden" id="delete_selected_form">
                 <div id="ids_to_delete"></div>
                 <input type="hidden" name="method" value="DELETE">
                 <button type="submit" id="delete_selected" class="btn btn-outline-danger">

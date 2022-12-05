@@ -8,4 +8,5 @@ Develop MVC application to work with user data. Requirements:
  - Create openapi documentation
  - Use webpack for js
  - Add PHPUnit tests
+ - Put solution in Docker
  - This list will be updated

@@ -31,7 +31,7 @@ if ($data['method'] == 'POST' || $data['method'] == 'PUT') {
     if ($_POST['id'] != '') {
         $data['body']['id'] = $_POST['id'];
     }
-} elseif ($data['method'] == 'DELETE') {
+} elseif ($data['method'] == 'DELETE' && isset($_POST['ids'])) {
     $data['body'] = $_POST['ids'];
 }
 

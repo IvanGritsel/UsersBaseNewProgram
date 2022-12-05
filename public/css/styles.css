@@ -46,6 +46,11 @@
     margin: 5px;
 }
 
+.small-margin-abs-hidden {
+    margin: 5px;
+    display: none;
+}
+
 .active-option {
     color: darkblue;
 }

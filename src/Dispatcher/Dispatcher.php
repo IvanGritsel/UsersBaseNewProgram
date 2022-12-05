@@ -27,7 +27,7 @@ class Dispatcher
         $filesInFolder = scandir(__DIR__ . '/../Controller/');
         foreach ($filesInFolder as $fileName) {
             if (preg_match("/^([A-Z][a-z]+)+Controller\.php$/", $fileName)) {
-                include ROOT_DIR . 'Controller\\' . $fileName;
+                include ROOT_DIR . 'Controller/' . $fileName;
                 $fileName = preg_replace("/\.php/", '', $fileName);
                 $fileName = "App\\Controller\\$fileName";
                 $this->controllers[] = new $fileName();
@@ -164,12 +164,11 @@ class Dispatcher
     {
         if ($variableName) {
             $variableValue = $this->getPathVariableValue($requestPath, $methodPath, $variableName);
-            $methodPathReplaced = preg_replace('/\{' . $variableName . '}/', $variableValue, $methodPath);
-
-            return $methodPathReplaced === $requestPath;
-        } else {
-            return $methodPath === $requestPath;
+            if (isset($variableValue)) {
+                $methodPath = preg_replace('/\{' . $variableName . '}/', $variableValue, $methodPath);
+            }
         }
+        return $methodPath === $requestPath;
     }
 
     private function getPathVariableValue(string $requestPath, string $methodPath, string $variableName): string|null
@@ -178,7 +177,7 @@ class Dispatcher
         $methodPathChunked = preg_split('/\//', $methodPath);
         $variableIndex = array_search('{' . $variableName . '}', $methodPathChunked);
 
-        return $requestPathChunked[$variableIndex];
+        return $requestPathChunked[$variableIndex] ?? null;
     }
 
     private function getArgument(Controller $controller, string $method, array $parsedRequest): mixed

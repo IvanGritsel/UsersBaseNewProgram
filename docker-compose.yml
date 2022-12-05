@@ -1,0 +1,58 @@
+services:
+  app:
+    build:
+      args:
+        user: user
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: ubimage
+    container_name: ub_app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www/
+    networks:
+      - net
+  db:
+    image: mysql:latest
+    container_name: ub_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: users_base
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_PASSWORD: 1234
+      MYSQL_USER: root
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
+    networks:
+      - net
+  nginx:
+    image: nginx:1.17-alpine
+    container_name: ub-nginx
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d
+    networks:
+      - net
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: tools_php-phpmyadmin
+    restart: unless-stopped
+    environment:
+      - PMA_ARBITRARY=1
+      - UPLOAD_LIMIT=1024M
+      - MEMORY_LIMIT=1024M
+      - MAX_EXECUTION_TIME=300
+    ports:
+      - 8000:80
+    networks:
+      - net
+networks:
+  net:
+    driver: bridge
