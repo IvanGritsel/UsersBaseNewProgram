@@ -1,4 +1,4 @@
-Tasks 2.1 - 2.11
+Tasks 2.1 - 2.12
 
 Develop MVC application to work with user data. Requirements:
 
